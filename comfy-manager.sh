@@ -1,18 +1,39 @@
-%cd /content/model-sh
-!sed -i 's/\r$//' *.sh
-!chmod +x *.sh
+#!/bin/bash
+set -e
 
-%cd /content/ComfyUI
-!pip install -U --pre comfyui-manager
+echo "=================================="
+echo "INSTALLING COMFYUI MANAGER"
+echo "=================================="
 
-%cd /content/ComfyUI/custom_nodes
-!rm -rf ComfyUI-Manager
-!git clone https://github.com/ltdrdata/ComfyUI-Manager.git
+if [ ! -d "/content/ComfyUI" ]; then
+  echo "ERROR: /content/ComfyUI not found."
+  echo "Run install_comfyui.sh first."
+  exit 1
+fi
 
-%cd /content/ComfyUI/custom_nodes/ComfyUI-Manager
-!pip install -r requirements.txt || true
+cd /content/ComfyUI
 
-%cd /content/model-sh
-!sed -i 's/python main.py --listen 0.0.0.0 --port 8188/python main.py --listen 0.0.0.0 --port 8188 --enable-manager/g' start_comfyui_tunnel.sh
+echo "Installing manager package..."
+pip install -U --pre comfyui-manager || true
 
-!bash start_comfyui_tunnel.sh
+echo "Installing Manager custom node..."
+mkdir -p /content/ComfyUI/custom_nodes
+cd /content/ComfyUI/custom_nodes
+
+if [ ! -d "ComfyUI-Manager" ]; then
+  git clone https://github.com/ltdrdata/ComfyUI-Manager.git
+else
+  cd ComfyUI-Manager
+  git pull || true
+  cd ..
+fi
+
+cd /content/ComfyUI/custom_nodes/ComfyUI-Manager
+
+echo "Installing Manager requirements..."
+pip install -r requirements.txt || true
+
+echo "=================================="
+echo "COMFYUI MANAGER INSTALLED"
+echo "Start ComfyUI with: --enable-manager"
+echo "=================================="
