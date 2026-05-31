@@ -30,4 +30,4 @@ grep -o 'https://[-a-zA-Z0-9.]*loca.lt' /content/localtunnel.log | head -n 1 || 
 
 echo "=============================="
 echo "Starting ComfyUI..."
-python main.py --listen 0.0.0.0 --port 8188
+!python main.py --listen 0.0.0.0 --port 8188 --enable-manager
